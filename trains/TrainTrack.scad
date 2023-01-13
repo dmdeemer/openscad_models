@@ -62,26 +62,21 @@ module curved_track_raw(a=90)
     
 }
 
-module hooks()
-for( i = [-10,0,10] )
-translate([0,i,0])
+module hooks(m=0)
+for(y=[-10,10])
+translate([0,y,-m])
+linear_extrude(5+2*m)
 union()
 {
-    translate([0,0,1])
-    cube([20,4,2],center=true);
+    translate([10,0])
+    circle(r=5+m);
     
-    translate([10,0,0])
-    cylinder(r=2,h=7,$fn=14);
+    polygon([[-10,3.5+m],[10,3.5+m],
+             [10,-3.5-m],[-10,-3.5-m]]);
     
-    translate([10,0,7])
-    sphere(r=2,$fn=14);
-    
-    translate([-10,0,2])
-    rotate([0,90,0])
-    cylinder(r=2,h=20,$fn=14);
 }
 
-module straight_track(L=160)
+module straight_track(L=160,m=0.4)
 difference()
 {
     union()
@@ -90,15 +85,20 @@ difference()
         
         translate([L/2,0,0])
         hooks();
+        
     }
     
     translate([-L/2,0,0])
-    hooks();
-    translate([-L/2,0,-1])
-    hooks();
+    hooks(m);
+
+    translate([10,0,-1])
+    rotate([0,0,90])
+    mirror([0,1,0])
+    linear_extrude(3)
+    text(str(m),halign="center",valign="center");
 }
 
-module curved_track(a=90)
+module curved_track(a=90,m=0.4)
 difference()
 {
     union()
@@ -114,7 +114,7 @@ difference()
     rotate([0,0,a])
     translate([R,0,z])
     rotate([0,0,-90])
-    hooks();
+    hooks(m);
 
 }
 
@@ -138,4 +138,6 @@ curved_track(45);
 
 translate([-400,0,0])
 curved_track(90);
+
+
 
