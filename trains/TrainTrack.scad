@@ -5,7 +5,7 @@ eps=0.01;
 module straight_track_raw(L=160)
 {
     N=floor(L/20 + 0.5);
-    
+
     union()
     {
 
@@ -34,7 +34,7 @@ union()
     for( x=[-15,15] )
     translate([x,11])
     polygon([[-2,-4],[-2,4],[2,4],[2,-4]]);
-    
+
     polygon([[-25,0],[25,0],[15,8],[-15,8]]);
 }
 
@@ -53,28 +53,33 @@ module curved_track_raw(a=90)
         rotate_extrude(angle=a,convexity=4,$fn=120)
         translate([R,0,0])
         track_profile();
-        
+
         for( i = [0.5:1:N] )
         rotate([0,0,i*11.25])
         translate([R,0,6])
         cube([40,10,10],center=true);
     }
-    
+
 }
 
-module hooks(m=0)
-for(y=[-10,10])
-translate([0,y,-m])
+module hook(m=0)
+translate([0,0,-m])
 linear_extrude(5+2*m)
 union()
 {
     translate([10,0])
     circle(r=5+m);
-    
+
     polygon([[-10,3.5+m],[10,3.5+m],
              [10,-3.5-m],[-10,-3.5-m]]);
-    
+
 }
+
+module hooks(m=0)
+for(y=[-10,10])
+translate([0,y,-m])
+hook(m);
+
 
 module straight_track(L=160,m=0.4)
 difference()
@@ -82,20 +87,26 @@ difference()
     union()
     {
         straight_track_raw(L);
-        
-        translate([L/2,0,0])
-        hooks();
-        
-    }
-    
-    translate([-L/2,0,0])
-    hooks(m);
 
-    translate([10,0,-1])
-    rotate([0,0,90])
-    mirror([0,1,0])
-    linear_extrude(3)
-    text(str(m),halign="center",valign="center");
+        translate([L/2,-10,0])
+        hook(0);
+        translate([-L/2,10,0])
+        mirror([1,0,0])
+        hook(0);
+
+        translate([0,0,7])
+        rotate([0,0,90])
+        scale([0.75,0.75,1])
+        linear_extrude(2)
+        text(str(m),halign="center",valign="center");
+    }
+
+    translate([-L/2,-10,0])
+    hook(m);
+    translate([L/2,10,0])
+    mirror([1,0,0])
+    hook(m);
+
 }
 
 module curved_track(a=90,m=0.4)
@@ -104,7 +115,7 @@ difference()
     union()
     {
         curved_track_raw(a=a);
-        
+
         translate([R,0,0])
         rotate([0,0,-90])
         hooks();
