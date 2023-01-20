@@ -1,6 +1,3 @@
-eps=0.01;
-
-
 
 module straight_track_raw(L=160)
 {
@@ -24,9 +21,6 @@ module straight_track_raw(L=160)
     polygon([[0,-25],[0,25],[8,15],[8,-15]]);
     }
 }
-
-
-
 
 module track_profile()
 union()
@@ -62,23 +56,59 @@ module curved_track_raw(a=90)
 
 }
 
-module hook(m=0)
-translate([0,0,-m])
-linear_extrude(5+2*m)
+module hook_profile(m=0)
 union()
 {
     translate([10,0])
-    circle(r=5+m);
+    circle(r=5+m,$fn=24);
+    square([20,7+2*m],center=true);
+}
 
-    polygon([[-10,3.5+m],[10,3.5+m],
-             [10,-3.5-m],[-10,-3.5-m]]);
+module positive_hook(m=0)
+intersection()
+{
+    translate([0,0,2.5])
+    union()
+    {
+        rotate([90,0,90])
+        rotate_extrude(angle=45,$fn=64)
+        translate([10,0,0])
+        rotate([0,0,90])
+        hook_profile(m);
+
+        translate([0,10,-5])
+        linear_extrude(5)
+        hook_profile(m);
+
+    }
+
+    translate([0,10,0])
+    linear_extrude(5+m)
+    hook_profile(m);
 
 }
 
-module hooks(m=0)
-for(y=[-10,10])
-translate([0,y,-m])
-hook(m);
+module negative_hook(m)
+intersection()
+{
+    translate([0,0,2.5])
+    cube([100,100,5+2*m],center=true);
+
+    rotate([0,0,180])
+    union()
+    {
+        translate([0,10,-m])
+        linear_extrude(5+2*m)
+        hook_profile(m);
+
+        translate([0,0,2.5])
+        rotate([90,45,90])
+        rotate_extrude(angle=45,$fn=64)
+        translate([10,0,0])
+        rotate([0,0,90])
+        hook_profile(m);
+    }
+}
 
 
 module straight_track(L=160,m=0.4)
@@ -88,25 +118,24 @@ difference()
     {
         straight_track_raw(L);
 
-        translate([L/2,-10,0])
-        hook(0);
-        translate([-L/2,10,0])
-        mirror([1,0,0])
-        hook(0);
+        translate([L/2,0,0])
+        positive_hook();
+        translate([-L/2,0,0])
+        rotate([0,0,180])
+        positive_hook();
 
-        translate([0,0,7])
+        translate([0,0,8])
         rotate([0,0,90])
         scale([0.75,0.75,1])
         linear_extrude(2)
         text(str(m),halign="center",valign="center");
     }
 
-    translate([-L/2,-10,0])
-    hook(m);
-    translate([L/2,10,0])
-    mirror([1,0,0])
-    hook(m);
-
+    translate([L/2,0,0])
+    negative_hook(m);
+    translate([-L/2,0,0])
+    rotate([0,0,180])
+    negative_hook(m);
 }
 
 module curved_track(a=90,m=0.4)
@@ -118,14 +147,22 @@ difference()
 
         translate([R,0,0])
         rotate([0,0,-90])
-        hooks();
+        positive_hook();
+
+        rotate([0,0,a])
+        translate([R,0,0])
+        rotate([0,0,90])
+        positive_hook();
     }
 
-    for( z = [0,-1] )
-    rotate([0,0,a])
-    translate([R,0,z])
+    translate([R,0,0])
     rotate([0,0,-90])
-    hooks(m);
+    negative_hook(m);
+
+    rotate([0,0,a])
+    translate([R,0,0])
+    rotate([0,0,90])
+    negative_hook(m);
 
 }
 
@@ -149,6 +186,5 @@ curved_track(45);
 
 translate([-400,0,0])
 curved_track(90);
-
 
 
