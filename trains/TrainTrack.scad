@@ -111,7 +111,7 @@ intersection()
 }
 
 
-module straight_track(L=160,m=0.4)
+module straight_track(L=160,m=0.2)
 difference()
 {
     union()
@@ -138,7 +138,7 @@ difference()
     negative_hook(m);
 }
 
-module curved_track(a=90,m=0.4)
+module curved_track(a=90,m=0.2)
 difference()
 {
     union()
@@ -166,6 +166,15 @@ difference()
 
 }
 
+
+translate([-150,-30,0])
+curved_track(45,m=0.2);
+
+translate([20,0,0])
+rotate([0,0,90])
+straight_track(120,m=0.2);
+
+/*
 translate([0,-100,0])
 straight_track(160);
 
@@ -186,5 +195,5 @@ curved_track(45);
 
 translate([-400,0,0])
 curved_track(90);
-
+*/
 
