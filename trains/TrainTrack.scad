@@ -92,13 +92,13 @@ module negative_hook(m)
 intersection()
 {
     translate([0,0,2.5])
-    cube([100,100,5+2*m],center=true);
+    cube([100,100,5+6*m],center=true);
 
     rotate([0,0,180])
     union()
     {
         translate([0,10,-m])
-        linear_extrude(5+2*m)
+        linear_extrude(10)
         hook_profile(m);
 
         translate([0,0,2.5])
@@ -124,11 +124,14 @@ difference()
         rotate([0,0,180])
         positive_hook();
 
-        translate([0,0,8])
-        rotate([0,0,90])
-        scale([0.75,0.75,1])
-        linear_extrude(2)
-        text(str(m),halign="center",valign="center");
+        if( false )
+        {
+            translate([0,0,8])
+            rotate([0,0,90])
+            scale([0.75,0.75,1])
+            linear_extrude(2)
+            text(str(m),halign="center",valign="center");
+        }
     }
 
     translate([L/2,0,0])
