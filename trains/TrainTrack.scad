@@ -123,7 +123,6 @@ difference()
         translate([-L/2,0,0])
         rotate([0,0,180])
         positive_hook();
-
         if( false )
         {
             translate([0,0,8])

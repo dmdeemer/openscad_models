@@ -1,8 +1,22 @@
 use <BezierTest.scad>
 
 
+module heart(a=1.0,r=0.75)
+let( f  = sqrt(a*a+1),
+     cy = 10*(a+r/f),
+     cx = 10*(1-a*r/f) )
+translate( [0,-cy/2-5*r] )
+{
 
-module bottlecap(r0=19.5,l=50)
+    polygon( [[0,0],[10,10*a],
+              [cx,cy],[-cx,cy],
+              [-10,10*a]] );
+    for( x=[-cx,cx] )
+    translate( [x,cy] )
+    circle( 10*r );
+}
+
+module bottlecap(r0=19.5,l=50,top="heart")
 union()
 {
     a_pts = [
@@ -27,9 +41,9 @@ union()
             [for (p=b_pts2) [p.x,p.y]]
         )
     );
-            
+
     difference()
-    {            
+    {
         translate([0,0,l-18])
         cylinder(r=15,h=18,$fn=80);
         translate([0,0,l-19])
@@ -50,15 +64,25 @@ union()
 
     translate([0,0,1])
     rotate_extrude($fn=80)
-    translate([r0,0,0])        
-    circle(r=0.5,$fn=12);        
+    translate([r0,0,0])
+    circle(r=0.5,$fn=12);
 
+    if(top=="santa")
     translate([0,0,l-0.1])
     scale([0.24,0.24,0.04])
     surface("santa.png",center=true);
+
+    if(top=="heart")
+    color("pink")
+    translate([0,-1,l-0.1])
+    linear_extrude(1)
+    heart(a=1,r=0.65);
+
 }
 
 
-color("#aaaaff")
+
+if(true)
+//color("#aaaaff")
 bottlecap(19.5,55);
 
